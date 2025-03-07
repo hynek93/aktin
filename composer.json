@@ -22,7 +22,8 @@
 		"nettrine/orm": "^0.9",
 		"nettrine/dbal": "^0.9",
 		"doctrine/orm": "^2.14",
-		"doctrine/migrations": "^3.8"
+		"doctrine/migrations": "^3.8",
+		"firebase/php-jwt": "^6.11"
 	},
 	"require-dev": {
 		"nette/tester": "^2.0"

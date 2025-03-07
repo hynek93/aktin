@@ -15,8 +15,12 @@ final class RouterFactory
 
 	public static function createRouter(): RouteList
 	{
-		$router = new RouteList;
-		$router->addRoute('<presenter>/<action>[/<id>]', 'Homepage:default');
+        $router = new RouteList();
+
+        $router[] = new Route('<presenter>[/<id [0-9]+>][/<action>]', [
+            'action' => 'default',
+        ]);
+
 		return $router;
 	}
 }

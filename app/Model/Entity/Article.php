@@ -86,4 +86,16 @@ class Article
     {
         $this->updatedAt = $updatedAt;
     }
+
+    public function getData(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'title' => $this->getTitle(),
+            'content' => $this->getContent(),
+            'created_at' => $this->getCreatedAt(),
+            'updated_at' => $this->getUpdatedAt(),
+            'author' => $this->getAuthor()->getData(),
+        ];
+    }
 }

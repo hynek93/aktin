@@ -3,6 +3,7 @@
 namespace App\Model\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Nette\Security\Passwords;
 
 #[ORM\Entity]
 #[ORM\Table(name: "users")]
@@ -25,6 +26,11 @@ class User
     #[ORM\Column(type: "string", length: 50)]
     private string $role;
 
+    public const
+        ROLE_ADMIN = 'admin',
+        ROLE_AUTHOR = 'author',
+        ROLE_READER = 'reader';
+
     public function getId(): int
     {
         return $this->id;
@@ -45,9 +51,10 @@ class User
         return $this->passwordHash;
     }
 
-    public function setPasswordHash(string $passwordHash): void
+    public function setPasswordHash(string $password): void
     {
-        $this->passwordHash = $passwordHash;
+        $passwords = new Passwords();
+        $this->passwordHash = $passwords->hash($password);
     }
 
     public function getName(): string
@@ -68,5 +75,20 @@ class User
     public function setRole(string $role): void
     {
         $this->role = $role;
+    }
+
+    public function getData(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'email' => $this->getEmail(),
+            'name' => $this->getName(),
+            'role' => $this->getRole(),
+        ];
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->getRole() === $role;
     }
 }
