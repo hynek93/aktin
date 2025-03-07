@@ -1,3 +1,4 @@
 /.idea
 /vendor
+/temp/cache
 app/config/local.neon

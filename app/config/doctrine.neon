@@ -1,0 +1,22 @@
+extensions:
+    doctrine.dbal: Nettrine\DBAL\DI\DbalExtension
+    doctrine.dbal.console: Nettrine\DBAL\DI\DbalConsoleExtension
+    doctrine.orm: Nettrine\ORM\DI\OrmExtension
+    doctrine.orm.attributes: Nettrine\ORM\DI\OrmAttributesExtension
+    doctrine.orm.cache: Nettrine\ORM\DI\OrmCacheExtension
+    doctrine.orm.console: Nettrine\ORM\DI\OrmConsoleExtension
+    doctrine.cache: Nettrine\Cache\DI\CacheExtension
+
+doctrine.orm.attributes:
+    mapping:
+        App\Model\Entity: /var/www/html/app/Model/Entity
+
+doctrine.dbal:
+    debug:
+        panel: %debugMode%
+    connection:
+        driver: pdo_mysql
+        host: %doctrine.host%
+        user: %doctrine.user%
+        password: %doctrine.password%
+        dbname: %doctrine.dbname%

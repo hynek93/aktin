@@ -1,5 +1,12 @@
-parameters:
+includes:
+    - doctrine.neon
 
+parameters:
+    doctrine:
+        host: db
+        user: root
+        password: root
+        dbname: aktin
 
 application:
 	errorPresenter: Error

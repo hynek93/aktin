@@ -14,6 +14,7 @@ class Booting
 		$configurator = new Configurator;
 
 		//$configurator->setDebugMode('23.75.345.200'); // enable for your remote IP
+        $configurator->setDebugMode(true);
 		$configurator->enableTracy(__DIR__ . '/../log');
 
 		$configurator->setTimeZone('Europe/Prague');
@@ -24,7 +25,6 @@ class Booting
 			->register();
 
 		$configurator->addConfig(__DIR__ . '/config/common.neon');
-		$configurator->addConfig(__DIR__ . '/config/local.neon');
 
 		return $configurator;
 	}
