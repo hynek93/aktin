@@ -6,11 +6,11 @@ use Doctrine\DBAL\DriverManager;
 
 require __DIR__ . '/vendor/autoload.php';
 
-$config = new PhpFile(__DIR__ . '/migrations.php'); // Odkaz na hlavní konfiguraci
+$config = new PhpFile(__DIR__ . '/migrations.php');
 $connection = DriverManager::getConnection([
     'dbname' => 'aktin',
-    'user' => 'user',
-    'password' => 'pass',
+    'user' => 'root',
+    'password' => 'root',
     'host' => 'db',
     'driver' => 'pdo_mysql',
     'charset' => 'utf8mb4',
