@@ -74,7 +74,7 @@ Parametr `name` u vytvoření a editace uživatele je volitelný.
 
 # Testy
 
-Připraveny jsou 3 Unit testy:
+Připraveny jsou 4 Unit testy:
 
 - Uživatel s rolí čtenář nemá přístup ke správě uživatelů
 - Uživatel s rolí autora může upravovat pouze vlastní článek
