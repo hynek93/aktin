@@ -125,6 +125,35 @@ class ApiTest extends TestCase
         $this->assertEquals(\Nette\Http\IResponse::S200_OK, $response->getStatusCode());
     }
 
+    public function testReaderCannotManageArticles(): void
+    {
+        $response = $this->client->request('POST', "/articles", [
+            'headers' => ['Authorization' => 'Bearer ' . $this->readerToken],
+            'json' => [
+                'title' => 'Článek čtenáře',
+                'content' => 'Text článku',
+            ],
+        ]);
+
+        $this->assertEquals(\Nette\Http\IResponse::S403_Forbidden, $response->getStatusCode());
+
+        $authorArticleId = $this->testArticles[User::ROLE_AUTHOR];
+        $response = $this->client->request('PUT', "/articles/{$authorArticleId}", [
+            'headers' => ['Authorization' => 'Bearer ' . $this->readerToken],
+            'json' => [
+                'title' => 'Článek čtenáře'
+            ],
+        ]);
+
+        $this->assertEquals(\Nette\Http\IResponse::S403_Forbidden, $response->getStatusCode());
+
+        $response = $this->client->request('DELETE', "/articles/{$authorArticleId}", [
+            'headers' => ['Authorization' => 'Bearer ' . $this->readerToken]
+        ]);
+
+        $this->assertEquals(\Nette\Http\IResponse::S403_Forbidden, $response->getStatusCode());
+    }
+
     protected function tearDown(): void
     {
         foreach ($this->testArticles as $articleId) {
