@@ -21,7 +21,7 @@ class AuthPresenter extends BasePresenter
             $this->hasError('Missing required fields');
         }
 
-        if (!in_array($data->role, $this->getRolesSelection())) {
+        if (!in_array($data->role, User::getRolesSelection())) {
             $this->hasError('Not allowed role');
         }
 
@@ -29,11 +29,15 @@ class AuthPresenter extends BasePresenter
             $this->hasError('E-mail already exists');
         }
 
+        if (!filter_var($data->email, FILTER_VALIDATE_EMAIL)) {
+            $this->hasError('Enter valid e-mail address');
+        }
+
         $user = new User();
         $user->setEmail($data->email);
         $user->setRole($data->role);
         $user->setPasswordHash($data->password);
-        $user->setName($data->name);
+        $user->setName($data->name ?? null);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
@@ -73,19 +77,5 @@ class AuthPresenter extends BasePresenter
             'user' => $user->getData(),
             'token' => $token
         ], 'User has been successfully logged in');
-    }
-
-    protected function getRolesSelection(): array
-    {
-        return [
-            User::ROLE_ADMIN,
-            User::ROLE_AUTHOR,
-            User::ROLE_READER
-        ];
-    }
-
-    protected function generateToken(): string
-    {
-        return bin2hex(openssl_random_pseudo_bytes(32));
     }
 }

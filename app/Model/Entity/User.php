@@ -87,6 +87,15 @@ class User
         ];
     }
 
+    public static function getRolesSelection(): array
+    {
+        return [
+            User::ROLE_ADMIN,
+            User::ROLE_AUTHOR,
+            User::ROLE_READER
+        ];
+    }
+
     public function hasRole(string $role): bool
     {
         return $this->getRole() === $role;

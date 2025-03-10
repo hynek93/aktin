@@ -11,59 +11,34 @@ class ArticlesPresenter extends BasePresenter
     public function startup(): void
     {
         parent::startup();
-        $this->user = $this->verifyToken();
+        $this->apiUser = $this->verifyToken();
 
-        if (!$this->user) {
+        if (!$this->apiUser) {
             $this->hasError('Invalid authorization token', IResponse::S401_Unauthorized);
         }
     }
 
-    public function actionDefault(): void
+    public function read(): void
     {
-        if ($this->getRequest()->isMethod('GET')) {
-            $id = $this->getParameter('id');
-            if ($id) {
-                $this->article();
-            } else {
-                $this->articles();
-            }
-        } elseif ($this->getRequest()->isMethod('POST')) {
-            $this->addArticle();
-        } elseif ($this->getRequest()->isMethod('PUT')) {
-            $this->editArticle();
-        } elseif ($this->getRequest()->isMethod('DELETE')) {
-            $this->deleteArticle();
-        }
-
-        $this->hasError('Wrong request method', IResponse::S405_MethodNotAllowed);
-    }
-
-    protected function articles(): void
-    {
-        $articles = $this->entityManager->getRepository(Article::class)->findAll();
+        $id = $this->getParameter('id');
         $payload = [];
 
-        foreach ($articles as $article) {
+        if ($id) {
+            $article = $this->getArticleById();
             $payload[] = $article->getData();
+        } else {
+            $articles = $this->entityManager->getRepository(Article::class)->findAll();
+            foreach ($articles as $article) {
+                $payload[] = $article->getData();
+            }
         }
 
-        $this->send([
-            'articles' => $payload
-        ]);
+        $this->send(['articles' => $payload]);
     }
 
-    protected function article(): void
+    public function create(): void
     {
-        $article = $this->getArticleById();
-
-        $this->send([
-            'article' => $article->getData()
-        ]);
-    }
-
-    protected function addArticle(): void
-    {
-        if ($this->user->hasRole(User::ROLE_READER)) {
+        if ($this->apiUser->hasRole(User::ROLE_READER)) {
             $this->hasError('Access denied', IResponse::S403_Forbidden);
         }
 
@@ -72,7 +47,7 @@ class ArticlesPresenter extends BasePresenter
             $this->hasError('Title or content is empty');
         }
 
-        $article = new Article($this->user, $data->title, $data->content);
+        $article = new Article($this->apiUser, $data->title, $data->content);
 
         $this->entityManager->persist($article);
         $this->entityManager->flush();
@@ -82,11 +57,11 @@ class ArticlesPresenter extends BasePresenter
         ], 'Article has been successfully created');
     }
 
-    protected function editArticle(): void
+    public function update(): void
     {
         $article = $this->getArticleById();
 
-        if ($this->user->hasRole(User::ROLE_READER) || ($this->user->hasRole(User::ROLE_AUTHOR) && $article->getAuthor()->getId() !== $this->user->getId())) {
+        if ($this->apiUser->hasRole(User::ROLE_READER) || ($this->apiUser->hasRole(User::ROLE_AUTHOR) && $article->getAuthor()->getId() !== $this->apiUser->getId())) {
             $this->hasError('Access denied', IResponse::S403_Forbidden);
         }
 
@@ -108,11 +83,11 @@ class ArticlesPresenter extends BasePresenter
         ], 'Article has been successfully updated');
     }
 
-    protected function deleteArticle(): void
+    public function delete(): void
     {
         $article = $this->getArticleById();
 
-        if ($this->user->hasRole(User::ROLE_READER) || ($this->user->hasRole(User::ROLE_AUTHOR) && $article->getAuthor()->getId() !== $this->user->getId())) {
+        if ($this->apiUser->hasRole(User::ROLE_READER) || ($this->apiUser->hasRole(User::ROLE_AUTHOR) && $article->getAuthor()->getId() !== $this->apiUser->getId())) {
             $this->hasError('Access denied', IResponse::S403_Forbidden);
         }
 
@@ -121,9 +96,14 @@ class ArticlesPresenter extends BasePresenter
         $this->send([], 'Article has been successfully deleted');
     }
 
-    protected function getArticleById(): ?Article
+    protected function getArticleById(): Article
     {
         $id = $this->getParameter('id');
+
+        if (!$id) {
+            $this->hasError('Article ID is empty');
+        }
+
         $article = $this->entityManager->getRepository(Article::class)->find($id);
 
         if (!$article) {

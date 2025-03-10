@@ -23,10 +23,12 @@
 		"nettrine/dbal": "^0.9",
 		"doctrine/orm": "^2.14",
 		"doctrine/migrations": "^3.8",
-		"firebase/php-jwt": "^6.11"
+		"firebase/php-jwt": "^6.11",
+		"guzzlehttp/guzzle": "^7.9"
 	},
 	"require-dev": {
-		"nette/tester": "^2.0"
+		"nette/tester": "^2.0",
+		"phpunit/phpunit": "^11.5"
 	},
 	"autoload": {
 		"classmap": [

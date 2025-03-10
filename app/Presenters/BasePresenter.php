@@ -3,19 +3,21 @@
 namespace App\Presenters;
 
 use App\Model\Entity\User;
+use App\Services\ApiInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Nette\Application\UI\Presenter;
+use Nette\Http\IRequest;
 use Nette\Http\IResponse;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
 
-class BasePresenter extends Presenter
+class BasePresenter extends Presenter implements ApiInterface
 {
     public EntityManagerInterface $entityManager;
 
-    protected ?User $user = null;
+    protected ?User $apiUser = null;
 
     protected string $jwtSecret = 'aktinJwtSecret';
 
@@ -23,6 +25,17 @@ class BasePresenter extends Presenter
     {
         parent::__construct();
         $this->entityManager = $entityManager;
+    }
+
+    public function actionDefault(): void
+    {
+        match ($this->getRequest()->getMethod()) {
+            IRequest::Get => $this->read(),
+            IRequest::Post => $this->create(),
+            IRequest::Put => $this->update(),
+            IRequest::Delete => $this->delete(),
+            default => $this->hasError('Wrong request method', IResponse::S405_MethodNotAllowed)
+        };
     }
 
     public function send(array $data = [], string $message = '', string $code = IResponse::S200_OK, bool $success = true): void
@@ -90,5 +103,25 @@ class BasePresenter extends Presenter
         } catch (\Exception $e) {
             return null;
         }
+    }
+
+    public function read(): void
+    {
+        $this->hasError('Request not supported');
+    }
+
+    public function create(): void
+    {
+        $this->hasError('Request not supported');
+    }
+
+    public function update(): void
+    {
+        $this->hasError('Request not supported');
+    }
+
+    public function delete(): void
+    {
+        $this->hasError('Request not supported');
     }
 }
